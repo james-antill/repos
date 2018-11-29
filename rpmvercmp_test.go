@@ -142,8 +142,8 @@ func TestRpmCBZ178798(t *testing.T) {
 	RPMVERCMP(t, "+", "_", 0)
 	RPMVERCMP(t, "_", "+", 0)
 }
-func TestRpmCTilda(t *testing.T) {
-	if !tilda {
+func TestRpmCTilde(t *testing.T) {
+	if !tilde {
 		t.SkipNow()
 	}
 	RPMVERCMP(t, "1.0~rc1", "1.0~rc1", 0)
@@ -155,6 +155,43 @@ func TestRpmCTilda(t *testing.T) {
 	RPMVERCMP(t, "1.0~rc1~git123", "1.0~rc1", -1)
 	RPMVERCMP(t, "1.0~rc1", "1.0~rc1~git123", 1)
 }
+
+func TestRpmCCaret(t *testing.T) {
+	if !caret {
+		t.SkipNow()
+	}
+
+	RPMVERCMP(t, "1.0^", "1.0^", 0)
+	RPMVERCMP(t, "1.0^", "1.0", 1)
+	RPMVERCMP(t, "1.0", "1.0^", -1)
+	RPMVERCMP(t, "1.0^git1", "1.0^git1", 0)
+	RPMVERCMP(t, "1.0^git1", "1.0", 1)
+	RPMVERCMP(t, "1.0", "1.0^git1", -1)
+	RPMVERCMP(t, "1.0^git1", "1.0^git2", -1)
+	RPMVERCMP(t, "1.0^git2", "1.0^git1", 1)
+	RPMVERCMP(t, "1.0^git1", "1.01", -1)
+	RPMVERCMP(t, "1.01", "1.0^git1", 1)
+	RPMVERCMP(t, "1.0^20160101", "1.0^20160101", 0)
+	RPMVERCMP(t, "1.0^20160101", "1.0.1", -1)
+	RPMVERCMP(t, "1.0.1", "1.0^20160101", 1)
+	RPMVERCMP(t, "1.0^20160101^git1", "1.0^20160101^git1", 0)
+	RPMVERCMP(t, "1.0^20160102", "1.0^20160101^git1", 1)
+	RPMVERCMP(t, "1.0^20160101^git1", "1.0^20160102", -1)
+}
+
+func TestRpmCCaretTilde(t *testing.T) {
+	if !tilde || !caret {
+		t.SkipNow()
+	}
+
+	RPMVERCMP(t, "1.0~rc1^git1", "1.0~rc1^git1", 0)
+	RPMVERCMP(t, "1.0~rc1^git1", "1.0~rc1", 1)
+	RPMVERCMP(t, "1.0~rc1", "1.0~rc1^git1", -1)
+	RPMVERCMP(t, "1.0^git1~pre", "1.0^git1~pre", 0)
+	RPMVERCMP(t, "1.0^git1", "1.0^git1~pre", 1)
+	RPMVERCMP(t, "1.0^git1~pre", "1.0^git1", -1)
+}
+
 func TestRpmCOdd(t *testing.T) {
 	// These are included here to document current, arguably buggy behaviors
 	// for reference purposes and for easy checking against  unintended
@@ -188,8 +225,8 @@ func TestRpmvercmpBZ50977(t *testing.T) {
 	RPMVERCMP(t, "1.0.1", "1.z", 1)
 }
 
-func TestRpmvercmpTilda(t *testing.T) {
-	if !tilda {
+func TestRpmvercmpTilde(t *testing.T) {
+	if !tilde {
 		t.SkipNow()
 	}
 	RPMVERCMP(t, "1.0~~rc1", "1.0~~rc1", 0)
@@ -201,6 +238,23 @@ func TestRpmvercmpTilda(t *testing.T) {
 	RPMVERCMP(t, "1.0~~~", "1.0~~~", 0)
 	RPMVERCMP(t, "1.0~~~~", "1.0~~~~", 0)
 	RPMVERCMP(t, "1.0~~~", "1.0~~~~", 1)
+	RPMVERCMP(t, "1.0~~~x", "1.0~~~~x", 1)
+}
+
+func TestRpmvercmpCaret(t *testing.T) {
+	if !tilde {
+		t.SkipNow()
+	}
+	RPMVERCMP(t, "1.0^^rc1", "1.0^^rc1", 0)
+	RPMVERCMP(t, "1.0^^^rc1", "1.0^^^rc1", 0)
+	RPMVERCMP(t, "1.0^^^^rc1", "1.0^^^^rc1", 0)
+	RPMVERCMP(t, "1.0^^^rc1", "1.0^^^^rc1", 1)
+
+	RPMVERCMP(t, "1.0^^", "1.0^^", 0)
+	RPMVERCMP(t, "1.0^^^", "1.0^^^", 0)
+	RPMVERCMP(t, "1.0^^^^", "1.0^^^^", 0)
+	RPMVERCMP(t, "1.0^^^", "1.0^^^^", -1)
+	RPMVERCMP(t, "1.0^^^x", "1.0^^^^x", 1)
 }
 
 func TestASCII(t *testing.T) {
